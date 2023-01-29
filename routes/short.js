@@ -7,3 +7,4 @@ router.post("/short", createShortURL);
 router.get("/:shortUrl", getShortURL);
 
 export default router;
+

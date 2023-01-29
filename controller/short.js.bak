@@ -23,11 +23,9 @@ const fixURL = (url) => {
 export const createShortURL = async (req, res) => {
     
     const longURL = req.body.full;
-    const base_url = "https://alive-ruby-squid.cyclic.app";
     
     // Check if Long URL is valid or not.
-    if (!validUrl.isUri(fixURL(req.body.full))) 
-    {
+    if (!validUrl.isUri(fixURL(req.body.full))) {
         return res.status(401).json({
             message: 'Unable to shorten that link. It is not a valid url!'
         })
@@ -46,39 +44,26 @@ export const createShortURL = async (req, res) => {
             if (hours >= 5) {
                 console.log("Found in DB. Since the timestamp > 5 hours, so, create a new one");
                 const shortURL = await shortUrl.create({ full: req.body.full, short: nanoid(15) });
+                myCache.set(shortURL.short, longURL, 18000);
                 console.log('shortURL', shortURL)
-
-                const short_id = shortURL.short
-                myCache.set(short_id, longURL, 18000);
-                const short_url = base_url +"/"+ short_id;
-                console.log(short_url);
-                res.send(short_url);
-            } 
-            else 
-            {
+                res.send(shortURL);
+            } else {
                 console.log("Found in DB with timestamp < 5 hours");
-                const short_id = found[0].short;
-                const short_url = base_url +"/"+ short_id;
-                console.log(short_url);
-                res.send(short_url);
+                res.send(found[0]);
             }
         } 
         else 
         {
             console.log("Not found in DB. So, create a new one");
             const shortURL = await shortUrl.create({ full: req.body.full, short: nanoid(15) });
+            myCache.set(shortURL.short, longURL, 18000);
             console.log('shortURL', shortURL)
-                
-            const short_id = shortURL.short
-            myCache.set(short_id, longURL, 18000);
-            const short_url = base_url +"/"+ short_id;
-            console.log(short_url);
-            res.send(short_url);
+            res.send(shortURL);
         }
     }
     catch (err) 
     {
-        console.log("Error: "+ err);
+        //console.log("Error: "+ err);
         res.status(501).json({
             message: 'Something went wrong! Please Try Again'
         })
