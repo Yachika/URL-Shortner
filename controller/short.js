@@ -7,23 +7,20 @@ import NodeCache from 'node-cache';
 
 
 // create cache
-/*
-stdTTL (Standard time to live for a key in cache) in seconds = 5 hours * 3600 = 18000 seconds
-*/
-
 const maxKeys = 5200
-const myCache = new NodeCache({ maxKeys });
+const myCache = new NodeCache({ maxKeys, recycleFreq: 5150 });
+
 
 const fixURL = (url) => {
     if (!URI.parse(url).scheme) {
-        return 'http://' + url;
+        return 'https://' + url;
     } else return url;
 }
 
 export const createShortURL = async (req, res) => {
     
     const longURL = req.body.full;
-    const base_url = "https://alive-ruby-squid.cyclic.app";
+    const base_url = process.env.BASE_URL;
     
     // Check if Long URL is valid or not.
     if (!validUrl.isUri(fixURL(req.body.full))) 
@@ -45,11 +42,11 @@ export const createShortURL = async (req, res) => {
             console.log("hours", hours)
             if (hours >= 5) {
                 console.log("Found in DB. Since the timestamp > 5 hours, so, create a new one");
-                const shortURL = await shortUrl.create({ full: req.body.full, short: nanoid(15) });
+                const shortURL = await shortUrl.create({ full: longURL, short: nanoid(15) });
                 console.log('shortURL', shortURL)
 
                 const short_id = shortURL.short
-                myCache.set(short_id, longURL, 18000);
+                myCache.set(short_id, longURL);
                 const short_url = base_url +"/"+ short_id;
                 console.log(short_url);
                 res.send(short_url);
@@ -66,11 +63,11 @@ export const createShortURL = async (req, res) => {
         else 
         {
             console.log("Not found in DB. So, create a new one");
-            const shortURL = await shortUrl.create({ full: req.body.full, short: nanoid(15) });
+            const shortURL = await shortUrl.create({ full: longURL, short: nanoid(15) });
             console.log('shortURL', shortURL)
                 
             const short_id = shortURL.short
-            myCache.set(short_id, longURL, 18000);
+            myCache.set(short_id, longURL);
             const short_url = base_url +"/"+ short_id;
             console.log(short_url);
             res.send(short_url);
@@ -97,8 +94,8 @@ export const getShortURL = async (req, res) => {
         const longURL = myCache.get(shortURL);        
         if(longURL)
         {
-            console.log("Long URL found in cache"+ longURL);
-            res.redirect(longURL);
+            console.log("Long URL found in cache: "+ longURL);
+            res.redirect(fixURL(longURL));
         }
         else
         {
@@ -109,7 +106,7 @@ export const getShortURL = async (req, res) => {
             {
                 const longURL = short.full
                 console.log("LongURL found in DB: "+longURL);
-                res.redirect(`${longURL}`);
+                res.redirect(`${fixURL(longURL)}`);
             }
             else
             {
