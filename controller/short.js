@@ -20,7 +20,7 @@ const fixURL = (url) => {
 export const createShortURL = async (req, res) => {
     
     const longURL = req.body.full;
-    const base_url = process.env.BASE_URL;
+    const base_url = "https://alive-ruby-squid.cyclic.app";
     
     // Check if Long URL is valid or not.
     if (!validUrl.isUri(fixURL(req.body.full))) 
