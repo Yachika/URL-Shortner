@@ -1,0 +1,25 @@
+{
+  "name": "url-shortener-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "SandeepKrSuman",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.17.1",
+    "express-api-cache": "^1.0.4",
+    "moment": "^2.29.4",
+    "mongoose": "^5.13.2",
+    "nanoid": "^4.0.0",
+    "node-cache": "^5.1.2",
+    "uri-js": "^4.4.1",
+    "valid-url": "^1.0.9"
+  }
+}

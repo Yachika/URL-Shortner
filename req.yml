@@ -1,0 +1,16 @@
+config:
+  target: "https://vast-gold-badger-wig.cyclic.app"
+  phases:
+    # 1 hours
+    - duration: 10
+    # will send 1000 requests every (duration)
+      arrivalRate: 1000
+      # This setting tells Artillery that we want to send a total of 1000 requests spread out evenly for 60 seconds
+      # arrivalCount: 1000
+
+scenarios:
+  - name: "Short URL"
+    flow:
+      - post:
+          url: "/short"
+          body: "{ full: https://docs.cyclic.sh/ }"
